@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { browserApi } from './browserApi';
+import logo from './logo.svg';
 
 const api = window.api || browserApi;
 
@@ -56,14 +57,14 @@ function App() {
     else notify('Your clean sport pledge is saved.');
   }
 
-  if (!dashboard) return <div className="loading"><div className="logo-mark">✦</div><b>Getting your game ready…</b></div>;
+  if (!dashboard) return <div className="loading"><img className="logo-mark" src={logo} alt=""/><b>Getting your game ready…</b></div>;
   const completed = modules.filter(m => m.completed).length;
   const progress = Math.round(completed / Math.max(1, modules.length) * 100);
   const heading = ({ home: 'Your clean sport journey', learn: 'Learning paths', lesson: activeModule?.title || 'Lesson', quiz: 'Quick challenge', analytics: 'Your progress', leaderboard: 'Leaderboard' })[page];
 
   return <div className="shell">
     <aside className="sidebar">
-      <div className="brand"><div className="brand-icon">✦</div><div><strong>clean sport</strong><small>QUEST</small></div></div>
+      <div className="brand"><img className="brand-icon" src={logo} alt=""/><div><strong>clean sport</strong><small>QUEST</small></div></div>
       <div className="nav-label">YOUR SPACE</div>
       <nav aria-label="Main navigation">{nav.map(([id, icon, label]) => <button key={id} aria-current={page === id || (id === 'learn' && ['lesson', 'quiz'].includes(page)) ? 'page' : undefined} className={`nav-item ${page === id || (id === 'learn' && ['lesson', 'quiz'].includes(page)) ? 'selected' : ''}`} onClick={() => go(id)}><span className="nav-icon" aria-hidden="true">{icon}</span>{label}{id === 'learn' && <span className="nav-chevron" aria-hidden="true">›</span>}</button>)}</nav>
       <div className="sidebar-bottom">
