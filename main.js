@@ -56,9 +56,26 @@ function initializeDatabase() {
     );
     CREATE TABLE IF NOT EXISTS badges (badge_id TEXT PRIMARY KEY, earned_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
   `);
+  updateDailyStreak();
 }
 
 const profile = () => db.prepare('SELECT * FROM profile WHERE id = 1').get();
+function localDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+function updateDailyStreak() {
+  const current = profile();
+  const now = new Date();
+  const today = localDateKey(now);
+  if (current.last_seen === today) return;
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const streak = current.last_seen === localDateKey(yesterday) ? current.streak + 1 : 1;
+  db.prepare('UPDATE profile SET streak = ?, last_seen = ? WHERE id = 1').run(streak, today);
+}
 const badgeLabels = { pledge: 'Clean Sport Pledge', testing: 'Testing Pro', scholar: 'Clean Sport Scholar' };
 function awardBadge(id) {
   const exists = db.prepare('SELECT 1 FROM badges WHERE badge_id = ?').get(id);
