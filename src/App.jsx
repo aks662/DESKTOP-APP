@@ -62,7 +62,7 @@ function App() {
     <aside className="sidebar">
       <div className="brand"><div className="brand-icon">✦</div><div><strong>clean sport</strong><small>QUEST</small></div></div>
       <div className="nav-label">YOUR SPACE</div>
-      <nav>{nav.map(([id, icon, label]) => <button key={id} className={`nav-item ${page === id || (id === 'learn' && ['lesson', 'quiz'].includes(page)) ? 'selected' : ''}`} onClick={() => go(id)}><span className="nav-icon">{icon}</span>{label}{id === 'learn' && <span className="nav-chevron">›</span>}</button>)}</nav>
+      <nav aria-label="Main navigation">{nav.map(([id, icon, label]) => <button key={id} aria-current={page === id || (id === 'learn' && ['lesson', 'quiz'].includes(page)) ? 'page' : undefined} className={`nav-item ${page === id || (id === 'learn' && ['lesson', 'quiz'].includes(page)) ? 'selected' : ''}`} onClick={() => go(id)}><span className="nav-icon" aria-hidden="true">{icon}</span>{label}{id === 'learn' && <span className="nav-chevron" aria-hidden="true">›</span>}</button>)}</nav>
       <div className="sidebar-bottom">
         <div className="pledge-mini"><div className="pledge-star">✦</div><b>Play fair. Be proud.</b><p>Small choices make a big difference.</p><button onClick={pledge}>Take the pledge</button></div>
         <div className="version">NADA · CLEAN SPORT LEARNING</div>
