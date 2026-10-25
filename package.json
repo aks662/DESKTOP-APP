@@ -1,0 +1,75 @@
+{
+  "name": "clean-sport-quest",
+  "version": "1.0.0",
+  "description": "A small offline-first anti-doping learning game for young athletes.",
+  "main": "main.js",
+  "author": "NADA Education MVP",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "desktop": "electron .",
+    "start": "npm run dev & wait-on http://127.0.0.1:5173 && electron .",
+    "build": "vite build",
+    "dist": "npm run build && electron-builder --mac dmg"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.4.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^39.0.0",
+    "electron-builder": "^25.1.8",
+    "vite": "^6.0.5",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "org.nada.cleansportquest",
+    "productName": "Clean Sport Quest",
+    "asar": true,
+    "compression": "maximum",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.education"
+    },
+    "dmg": {
+      "artifactName": "Clean-Sport-Quest-${version}-${arch}.${ext}",
+      "sign": false,
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "npmRebuild": true
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true,
+    "electron@39.8.10": true,
+    "esbuild@0.25.12": true
+  }
+}
