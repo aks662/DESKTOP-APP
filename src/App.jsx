@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { browserApi } from './browserApi';
+
+const api = window.api || browserApi;
 
 const nav = [
   ['home', '⌂', 'Home'], ['learn', '▤', 'Learn'], ['analytics', '▥', 'Progress'], ['leaderboard', '♛', 'Leaderboard']
@@ -19,7 +22,7 @@ function App() {
   const [toast, setToast] = useState('');
 
   async function refresh() {
-    const [d, m, a, l] = await Promise.all([window.api.getDashboardData(), window.api.getEducationalModules(), window.api.getAnalytics(), window.api.getLeaderboard()]);
+    const [d, m, a, l] = await Promise.all([api.getDashboardData(), api.getEducationalModules(), api.getAnalytics(), api.getLeaderboard()]);
     setDashboard(d); setModules(m); setAnalytics(a); setLeaders(l);
   }
   useEffect(() => { refresh().catch(() => setToast('Could not load local profile. Restart the app to try again.')); }, []);
@@ -28,18 +31,18 @@ function App() {
   function go(target) { setPage(target); setLesson(null); setActiveModule(null); setQuestion(null); setResult(null); setSelected(null); }
   async function openLesson(module) {
     setActiveModule(module);
-    setLesson(await window.api.getLearningContent(module.id));
+    setLesson(await api.getLearningContent(module.id));
     setPage('lesson');
   }
   async function beginQuiz(moduleId = activeModule?.id) {
-    const q = await window.api.getQuestion(moduleId);
+    const q = await api.getQuestion(moduleId);
     setQuestion(q); setSelected(null); setResult(null); setPage('quiz');
   }
   async function submit() {
     if (selected === null || !question) return;
     setBusy(true);
     try {
-      const response = await window.api.submitAnswer(question.id, selected);
+      const response = await api.submitAnswer(question.id, selected);
       setResult(response);
       await refresh();
       if (response.badge_unlocked) notify(`Badge unlocked: ${response.badge_unlocked}`);
@@ -47,7 +50,7 @@ function App() {
     finally { setBusy(false); }
   }
   async function pledge() {
-    const response = await window.api.signPledge();
+    const response = await api.signPledge();
     await refresh();
     if (response.badge_unlocked) notify(`Badge unlocked: ${response.badge_unlocked}`);
     else notify('Your clean sport pledge is saved.');
