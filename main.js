@@ -128,7 +128,7 @@ ipcMain.handle('answer:submit', (_event, questionId, userAnswer) => {
     }
   } else health = Math.max(0, health - 1);
   db.prepare('UPDATE profile SET xp = ?, health = ? WHERE id = 1').run(newXp, health);
-  return { correct, xp_awarded: xpAwarded, detailed_feedback: q.explanation, new_xp: newXp, new_health: health, badge_unlocked: badge };
+  return { correct, correct_answer: q.answer, xp_awarded: xpAwarded, detailed_feedback: q.explanation, new_xp: newXp, new_health: health, badge_unlocked: badge };
 });
 ipcMain.handle('analytics:get', () => {
   const total = db.prepare('SELECT COUNT(*) AS count FROM answers').get().count;
