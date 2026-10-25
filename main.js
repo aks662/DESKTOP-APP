@@ -113,17 +113,22 @@ ipcMain.handle('answer:submit', (_event, questionId, userAnswer) => {
   let health = p.health;
   let newXp = p.xp;
   let badge = null;
+  let xpAwarded = 0;
   db.prepare('INSERT INTO answers (question_id, correct) VALUES (?, ?)').run(q.id, Number(correct));
   if (correct) {
-    newXp += 20;
-    db.prepare('INSERT OR IGNORE INTO completions (module_id) VALUES (?)').run(q.moduleId);
-    if (q.moduleId === 'substances') badge = awardBadge('pledge');
-    if (q.moduleId === 'testing') badge = awardBadge('testing');
-    const correctCount = db.prepare('SELECT COUNT(*) AS count FROM answers WHERE correct = 1').get().count;
-    if (correctCount >= 3) badge = awardBadge('scholar') || badge;
+    const alreadyCompleted = db.prepare('SELECT 1 FROM completions WHERE module_id = ?').get(q.moduleId);
+    if (!alreadyCompleted) {
+      xpAwarded = 20;
+      newXp += xpAwarded;
+      db.prepare('INSERT INTO completions (module_id) VALUES (?)').run(q.moduleId);
+      if (q.moduleId === 'substances') badge = awardBadge('pledge');
+      if (q.moduleId === 'testing') badge = awardBadge('testing');
+      const completedCount = db.prepare('SELECT COUNT(*) AS count FROM completions').get().count;
+      if (completedCount >= modules.length) badge = awardBadge('scholar') || badge;
+    }
   } else health = Math.max(0, health - 1);
   db.prepare('UPDATE profile SET xp = ?, health = ? WHERE id = 1').run(newXp, health);
-  return { correct, detailed_feedback: q.explanation, new_xp: newXp, new_health: health, badge_unlocked: badge };
+  return { correct, xp_awarded: xpAwarded, detailed_feedback: q.explanation, new_xp: newXp, new_health: health, badge_unlocked: badge };
 });
 ipcMain.handle('analytics:get', () => {
   const total = db.prepare('SELECT COUNT(*) AS count FROM answers').get().count;
